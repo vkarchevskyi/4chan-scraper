@@ -17,16 +17,16 @@ class Scraper
 
             foreach ($data->posts as $post) {
                 if (empty($post->tim) || empty($post->ext)) {
-                    return;
+                    continue;
                 }
 
-                $imageName = $post->tim . $post->ext;
-                echo "Sending request for $imageName...\n";
+                $fileName = $post->tim . $post->ext;
+                echo "Sending request for $fileName...\n";
 
-                $response = $this->sendRequest("https://i.4cdn.org/$boardName/$imageName");
-                file_put_contents("$directoryPath/$imageName", $response, FILE_APPEND);
+                $response = $this->sendRequest("https://i.4cdn.org/$boardName/$fileName");
+                file_put_contents("$directoryPath/$fileName", $response, FILE_APPEND);
 
-                echo "$imageName was successfully saved.\n";
+                echo "$fileName was successfully saved.\n";
                 sleep(self::REQUEST_TIMEOUT);
             }
         }
