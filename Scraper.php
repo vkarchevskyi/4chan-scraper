@@ -23,15 +23,22 @@ class Scraper
                 $fileName = $post->tim . $post->ext;
                 echo "Sending request for $fileName...\n";
 
-                $response = $this->sendRequest("https://i.4cdn.org/$boardName/$fileName");
-                file_put_contents("$directoryPath/$fileName", $response, FILE_APPEND);
+                try {
+                    $response = $this->sendRequest("https://i.4cdn.org/$boardName/$fileName");
+                    file_put_contents("$directoryPath/$fileName", $response, FILE_APPEND);
+                    echo "$fileName was successfully saved.\n";
+                } catch (LogicException|RuntimeException $e) {
+                    echo "$fileName was skipped.\nReason: {$e->getMessage()}\n";
+                }
 
-                echo "$fileName was successfully saved.\n";
                 sleep(self::REQUEST_TIMEOUT);
             }
         }
     }
 
+    /**
+     * @throws RuntimeException|LogicException
+     */
     private function sendRequest(string $url): string
     {
         $curl = curl_init($url);
