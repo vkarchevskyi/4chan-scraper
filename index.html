@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Gallery</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gallery {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img, video {
+            max-width: 100vw;
+            max-height: 100vh;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="gallery"></div>
+
+<script>
+    const allowedImageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const allowedVideoExts = ['webm', 'mp4', 'mov'];
+
+    let mediaFiles = [];
+    let currentIndex = 0;
+
+    const gallery = document.getElementById('gallery');
+
+    function getExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+
+    function showNextMedia() {
+        if (mediaFiles.length === 0) return;
+
+        const file = mediaFiles[currentIndex];
+        const ext = getExtension(file);
+
+        gallery.innerHTML = '';
+
+        if (allowedImageExts.includes(ext)) {
+            const img = document.createElement('img');
+            img.src = 'data/' + file;
+            gallery.appendChild(img);
+
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % mediaFiles.length;
+                showNextMedia();
+            }, 1500);
+        } else if (allowedVideoExts.includes(ext)) {
+            const video = document.createElement('video');
+            video.src = 'data/' + file;
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            gallery.appendChild(video);
+
+            video.onended = () => {
+                currentIndex = (currentIndex + 1) % mediaFiles.length;
+                showNextMedia();
+            };
+        }
+    }
+
+    fetch('media-index.php')
+        .then(res => res.json())
+        .then(files => {
+            mediaFiles = files;
+            showNextMedia();
+        })
+        .catch(err => {
+            gallery.innerText = 'Error loading media list.';
+            console.error(err);
+        });
+</script>
+</body>
+</html>
