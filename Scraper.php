@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class Scraper
+final readonly class Scraper
 {
     private const int REQUEST_TIMEOUT = 1;
 
@@ -34,6 +34,8 @@ class Scraper
                 sleep(self::REQUEST_TIMEOUT);
             }
         }
+
+        echo "Scraping completed.\n";
     }
 
     /**
